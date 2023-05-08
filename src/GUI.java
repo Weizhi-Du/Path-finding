@@ -50,7 +50,6 @@ public class GUI extends JPanel {
         setPreferredSize(new Dimension(maze[0].length * cellSize, maze.length * cellSize));
     }
 
-    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         for (int i = 0; i < maze.length; i++) {
