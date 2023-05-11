@@ -114,6 +114,21 @@ public class GUI extends JPanel {
 //        }
 //    }
 
+    private void showPath(LinkedList<int[]> path, GUI gui) {
+        for (int[] cell : path) {
+            System.out.print("(" + cell[0] + ", " + cell[1] + ") ");  // Print the path
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            maze[cell[0]][cell[1]] = VISITED;
+            gui.repaint();
+        }
+    }
+
+
+
 
     public boolean dfs(int[][] maze, int startRow, int startCol, int endRow, int endCol, GUI gui) {
         int rows = maze.length;
@@ -127,12 +142,15 @@ public class GUI extends JPanel {
         Stack<Integer> stack = new Stack<>();
         stack.push(startRow * cols + startCol);
 
+        path.add(new int[]{startRow, startCol});
+
         while (!stack.isEmpty()) {
             int current = stack.pop();
             int row = current / cols;
             int col = current % cols;
 
             if (row == endRow && col == endCol) {
+                showPath(path, gui);
                 return true;
             }
 
@@ -152,6 +170,8 @@ public class GUI extends JPanel {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+                    path.add(new int[]{newRow, newCol});
                 }
             }
         }
