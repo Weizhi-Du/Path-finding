@@ -1,23 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Stack;
-import java.util.HashSet;
-import java.util.Set;
 
 
 public class GUI extends JPanel {
     private final int[][] maze;
     private final int cellSize;
-    private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE};
+    private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.PINK};
     private final int EMPTY = 0;
     private final int WALL = 1;
     private final int START = 2;
     private final int END = 3;
     private final int VISITED = 4;
     private final int SEARCHED = 5;
+    private static LinkedList<int[]> path = new LinkedList<int[]>();
     private static int[][] maze1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 0, 1, 0, 0, 0, 1},
@@ -30,7 +27,7 @@ public class GUI extends JPanel {
             {1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
     private static int[][] maze2 = {
-            {2, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
+            {0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
             {0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1},
             {1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1},
             {1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1},
@@ -40,7 +37,7 @@ public class GUI extends JPanel {
             {0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0},
             {1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 3},
+            {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
             {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
     };
 
@@ -83,64 +80,128 @@ public class GUI extends JPanel {
         }
     }
 
+//    public void changeCellColor(int[][] maze, int row, int col, Color color, GUI gui) {
+//        try {
+//            Thread.sleep(500);  // Delay to visualize the color change
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        maze[row][col] = getColorCode(color);
+//        gui.repaint();
+//        try {
+//            Thread.sleep(500);  // Delay to visualize the color change
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
-    public static List<int[]> DFS(int[][] maze, int startRow, int startCol, int endRow, int endCol) {
-        Stack<int[]> stack = new Stack<>();
-        Set<String> visited = new HashSet<>();
-        stack.push(new int[] {startRow, startCol});
-        visited.add(startRow + "," + startCol);
+//    private int getColorCode(Color color) {
+//        if (color.equals(Color.WHITE)) {
+//            return EMPTY;
+//        } else if (color.equals(Color.BLACK)) {
+//            return WALL;
+//        } else if (color.equals(Color.BLUE)) {
+//            return START;
+//        } else if (color.equals(Color.GREEN)) {
+//            return END;
+//        } else if (color.equals(Color.YELLOW)) {
+//            return VISITED;
+//        } else if (color.equals(Color.ORANGE)) {
+//            return SEARCHED;
+//        } else {
+//            return -1;  // Unknown color
+//        }
+//    }
+
+
+    public boolean dfs(int[][] maze, int startRow, int startCol, int endRow, int endCol, GUI gui) {
+        int rows = maze.length;
+        int cols = maze[0].length;
+
+        boolean[][] visited = new boolean[rows][cols];
+        visited[startRow][startCol] = true;
+
+        int[][] directions = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};  // Up, Left, Down, Right
+
+        Stack<Integer> stack = new Stack<>();
+        stack.push(startRow * cols + startCol);
 
         while (!stack.isEmpty()) {
-            int[] curr = stack.pop();
-            int row = curr[0];
-            int col = curr[1];
+            int current = stack.pop();
+            int row = current / cols;
+            int col = current % cols;
 
             if (row == endRow && col == endCol) {
-                // Found the end point, backtrack to get the path
-                List<int[]> path = new ArrayList<>();
-                path.add(new int[] {endRow, endCol});
-                while (row != startRow || col != startCol) {
-                    int[] prev = stack.pop();
-                    row = prev[0];
-                    col = prev[1];
-                    path.add(new int[] {row, col});
-                }
-                Collections.reverse(path);
-                return path;
+                return true;
             }
 
-            // Mark the current cell as visited
-            visited.add(row + "," + col);
+            for (int[] direction : directions) {
+                int newRow = row + direction[0];
+                int newCol = col + direction[1];
 
-            // Check all neighboring cells
-            for (int[] neighbor : getNeighbors(maze, row, col)) {
-                int neighborRow = neighbor[0];
-                int neighborCol = neighbor[1];
-                if (!visited.contains(neighborRow + "," + neighborCol)) {
-                    stack.push(new int[] {neighborRow, neighborCol});
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols
+                        && maze[newRow][newCol] != 1 && !visited[newRow][newCol]) {
+                    stack.push(newRow * cols + newCol);
+                    visited[newRow][newCol] = true;
+                    maze[newRow][newCol] = SEARCHED;
+                    gui.repaint();
+
+                    try {
+                        Thread.sleep(150);  // Delay to visualize the search process
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
 
-        // No path found
-        return null;
+        return false;
     }
 
-    private static List<int[]> getNeighbors(int[][] maze, int row, int col) {
-        List<int[]> neighbors = new ArrayList<>();
-        if (row > 0 && maze[row-1][col] == 0) {  // up
-            neighbors.add(new int[] {row-1, col});
+
+    public boolean bfs(int[][] maze, int startRow, int startCol, int endRow, int endCol, GUI gui) {
+        int rows = maze.length;
+        int cols = maze[0].length;
+
+        boolean[][] visited = new boolean[rows][cols];
+        visited[startRow][startCol] = true;
+
+        int[][] directions = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};  // Up, Left, Down, Right
+
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(startRow * cols + startCol);
+
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            int row = current / cols;
+            int col = current % cols;
+
+            if (row == endRow && col == endCol) {
+                return true;
+            }
+
+            for (int[] direction : directions) {
+                int newRow = row + direction[0];
+                int newCol = col + direction[1];
+
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols
+                        && maze[newRow][newCol] != 1 && !visited[newRow][newCol]) {
+                    queue.offer(newRow * cols + newCol);
+                    visited[newRow][newCol] = true;
+                    maze[newRow][newCol] = SEARCHED;
+                    gui.repaint();
+
+                    try {
+                        Thread.sleep(150);  // Delay to visualize the search process
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-        if (col > 0 && maze[row][col-1] == 0) {  // left
-            neighbors.add(new int[] {row, col-1});
-        }
-        if (row < maze.length-1 && maze[row+1][col] == 0) {  // down
-            neighbors.add(new int[] {row+1, col});
-        }
-        if (col < maze[0].length-1 && maze[row][col+1] == 0) {  // right
-            neighbors.add(new int[] {row, col+1});
-        }
-        return neighbors;
+
+        return false;
     }
 
 
@@ -158,6 +219,7 @@ public class GUI extends JPanel {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        panel.dfs(maze2, 0, 0, 10, 11, panel);
 
     }
 }
