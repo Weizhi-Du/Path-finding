@@ -7,14 +7,13 @@ import java.util.List;
 public class GUI extends JPanel {
     private final int[][] maze;
     private final int cellSize;
-    private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.PINK};
+    private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.GREEN, Color.RED, Color.ORANGE, Color.PINK};
     private final int EMPTY = 0;
     private final int WALL = 1;
     private final int START = 2;
     private final int END = 3;
-    private final int VISITED = 4;
+    private final int PATH = 4;
     private final int SEARCHED = 5;
-    private static LinkedList<int[]> path = new LinkedList<int[]>();
     private static int[][] maze1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 0, 1, 0, 0, 0, 1},
@@ -27,7 +26,7 @@ public class GUI extends JPanel {
             {1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
     private static int[][] maze2 = {
-            {0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
+            {2, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
             {0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1},
             {1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1},
             {1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1},
@@ -37,7 +36,7 @@ public class GUI extends JPanel {
             {0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0},
             {1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
+            {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 3},
             {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
     };
 
@@ -118,11 +117,11 @@ public class GUI extends JPanel {
         for (int[] cell : path) {
             System.out.print("(" + cell[0] + ", " + cell[1] + ") ");  // Print the path
             try {
-                Thread.sleep(100);
+                Thread.sleep(30);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            maze[cell[0]][cell[1]] = VISITED;
+            maze[cell[0]][cell[1]] = PATH;
             gui.repaint();
         }
     }
@@ -142,6 +141,7 @@ public class GUI extends JPanel {
         Stack<Integer> stack = new Stack<>();
         stack.push(startRow * cols + startCol);
 
+        LinkedList<int[]> path = new LinkedList<int[]>();
         path.add(new int[]{startRow, startCol});
 
         while (!stack.isEmpty()) {
@@ -166,7 +166,7 @@ public class GUI extends JPanel {
                     gui.repaint();
 
                     try {
-                        Thread.sleep(150);  // Delay to visualize the search process
+                        Thread.sleep(100);  // Delay to visualize the search process
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -192,12 +192,16 @@ public class GUI extends JPanel {
         Queue<Integer> queue = new LinkedList<>();
         queue.offer(startRow * cols + startCol);
 
+        LinkedList<int[]> path = new LinkedList<>();
+        path.add(new int[]{startRow, startCol});
+
         while (!queue.isEmpty()) {
             int current = queue.poll();
             int row = current / cols;
             int col = current % cols;
 
             if (row == endRow && col == endCol) {
+                showPath(path, gui);
                 return true;
             }
 
@@ -213,10 +217,12 @@ public class GUI extends JPanel {
                     gui.repaint();
 
                     try {
-                        Thread.sleep(150);  // Delay to visualize the search process
+                        Thread.sleep(100);  // Delay to visualize the search process
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+                    path.add(new int[]{newRow, newCol});
                 }
             }
         }
@@ -240,6 +246,7 @@ public class GUI extends JPanel {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         panel.dfs(maze2, 0, 0, 10, 11, panel);
+        panel.bfs(maze2, 0, 0, 10, 11, panel);
 
     }
 }
