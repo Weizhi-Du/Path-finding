@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
+
 
 
 public class GUI extends JPanel {
@@ -14,6 +14,9 @@ public class GUI extends JPanel {
     private final int END = 3;
     private final int PATH = 4;
     private final int SEARCHED = 5;
+    private static int[] startpoint;
+    private static int[] endpoint;
+
     private static int[][] maze1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 0, 1, 0, 0, 0, 1},
@@ -115,6 +118,9 @@ public class GUI extends JPanel {
 
     private void showPath(LinkedList<int[]> path, GUI gui) {
         for (int[] cell : path) {
+            if ((cell[0] == startpoint[0] && cell[1] == startpoint[1]) || (cell[0] == endpoint[0] && cell[1] == endpoint[1])) {
+                continue;
+            }
             System.out.print("(" + cell[0] + ", " + cell[1] + ") ");  // Print the path
             try {
                 Thread.sleep(30);
@@ -123,6 +129,7 @@ public class GUI extends JPanel {
             }
             maze[cell[0]][cell[1]] = PATH;
             gui.repaint();
+
         }
     }
 
@@ -162,6 +169,9 @@ public class GUI extends JPanel {
                         && maze[newRow][newCol] != 1 && !visited[newRow][newCol]) {
                     stack.push(newRow * cols + newCol);
                     visited[newRow][newCol] = true;
+                    if ((newRow == startpoint[0] && newCol == startpoint[1]) || (newRow == endpoint[0] && newCol == endpoint[1])) {
+                        continue;
+                    }
                     maze[newRow][newCol] = SEARCHED;
                     gui.repaint();
 
@@ -213,6 +223,9 @@ public class GUI extends JPanel {
                         && maze[newRow][newCol] != 1 && !visited[newRow][newCol]) {
                     queue.offer(newRow * cols + newCol);
                     visited[newRow][newCol] = true;
+                    if ((newRow == startpoint[0] && newCol == startpoint[1]) || (newRow == endpoint[0] && newCol == endpoint[1])) {
+                        continue;
+                    }
                     maze[newRow][newCol] = SEARCHED;
                     gui.repaint();
 
@@ -238,6 +251,8 @@ public class GUI extends JPanel {
 
         int cellSize = 40;
         GUI panel = new GUI(maze2, cellSize);
+        startpoint = new int[]{0, 0};
+        endpoint = new int[]{10, 11};
 
         JFrame frame = new JFrame("PATHFINDER");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -245,8 +260,8 @@ public class GUI extends JPanel {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        panel.dfs(maze2, 0, 0, 10, 11, panel);
-        panel.bfs(maze2, 0, 0, 10, 11, panel);
+        panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+        panel.bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
 
     }
 }
