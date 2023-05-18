@@ -1,20 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 
 public class GUI extends JPanel {
     private final int[][] maze;
     private final int cellSize;
-    private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.PINK};
+    private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.GREEN, Color.RED, Color.ORANGE, Color.PINK};
     private final int EMPTY = 0;
     private final int WALL = 1;
     private final int START = 2;
     private final int END = 3;
-    private final int VISITED = 4;
+    private final int PATH = 4;
     private final int SEARCHED = 5;
-    private static LinkedList<int[]> path = new LinkedList<int[]>();
+    private static int[] startpoint;
+    private static int[] endpoint;
+
     private static int[][] maze1 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 0, 1, 0, 0, 0, 1},
@@ -27,7 +31,7 @@ public class GUI extends JPanel {
             {1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
     private static int[][] maze2 = {
-            {0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
+            {2, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
             {0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1},
             {1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1},
             {1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1},
@@ -37,7 +41,7 @@ public class GUI extends JPanel {
             {0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0},
             {1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
+            {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 3},
             {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
     };
 
@@ -80,50 +84,55 @@ public class GUI extends JPanel {
         }
     }
 
-//    public void changeCellColor(int[][] maze, int row, int col, Color color, GUI gui) {
-//        try {
-//            Thread.sleep(500);  // Delay to visualize the color change
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        maze[row][col] = getColorCode(color);
-//        gui.repaint();
-//        try {
-//            Thread.sleep(500);  // Delay to visualize the color change
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+/*
+    public void changeCellColor(int[][] maze, int row, int col, Color color, GUI gui) {
+        try {
+            Thread.sleep(500);  // Delay to visualize the color change
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        maze[row][col] = getColorCode(color);
+        gui.repaint();
+        try {
+            Thread.sleep(500);  // Delay to visualize the color change
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-//    private int getColorCode(Color color) {
-//        if (color.equals(Color.WHITE)) {
-//            return EMPTY;
-//        } else if (color.equals(Color.BLACK)) {
-//            return WALL;
-//        } else if (color.equals(Color.BLUE)) {
-//            return START;
-//        } else if (color.equals(Color.GREEN)) {
-//            return END;
-//        } else if (color.equals(Color.YELLOW)) {
-//            return VISITED;
-//        } else if (color.equals(Color.ORANGE)) {
-//            return SEARCHED;
-//        } else {
-//            return -1;  // Unknown color
-//        }
-//    }
+    }
+    private int getColorCode(Color color) {
+        if (color.equals(Color.WHITE)) {
+            return EMPTY;
+        } else if (color.equals(Color.BLACK)) {
+            return WALL;
+        } else if (color.equals(Color.BLUE)) {
+            return START;
+        } else if (color.equals(Color.GREEN)) {
+            return END;
+        } else if (color.equals(Color.YELLOW)) {
+            return VISITED;
+        } else if (color.equals(Color.ORANGE)) {
+            return SEARCHED;
+        } else {
+            return -1;  // Unknown color
+        }
+    }
+*/
 
     private void showPath(LinkedList<int[]> path, GUI gui) {
         for (int[] cell : path) {
-            System.out.print("(" + cell[0] + ", " + cell[1] + ") ");  // Print the path
+            if ((cell[0] == startpoint[0] && cell[1] == startpoint[1]) || (cell[0] == endpoint[0] && cell[1] == endpoint[1])) {
+                continue;
+            }
+//            System.out.print("(" + cell[0] + ", " + cell[1] + ") ");  // Print the path
             try {
-                Thread.sleep(100);
+                Thread.sleep(30);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            maze[cell[0]][cell[1]] = VISITED;
+            maze[cell[0]][cell[1]] = PATH;
             gui.repaint();
+
         }
     }
 
@@ -142,6 +151,7 @@ public class GUI extends JPanel {
         Stack<Integer> stack = new Stack<>();
         stack.push(startRow * cols + startCol);
 
+        LinkedList<int[]> path = new LinkedList<int[]>();
         path.add(new int[]{startRow, startCol});
 
         while (!stack.isEmpty()) {
@@ -162,11 +172,14 @@ public class GUI extends JPanel {
                         && maze[newRow][newCol] != 1 && !visited[newRow][newCol]) {
                     stack.push(newRow * cols + newCol);
                     visited[newRow][newCol] = true;
+                    if ((newRow == startpoint[0] && newCol == startpoint[1]) || (newRow == endpoint[0] && newCol == endpoint[1])) {
+                        continue;
+                    }
                     maze[newRow][newCol] = SEARCHED;
                     gui.repaint();
 
                     try {
-                        Thread.sleep(150);  // Delay to visualize the search process
+                        Thread.sleep(100);  // Delay to visualize the search process
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -192,12 +205,16 @@ public class GUI extends JPanel {
         Queue<Integer> queue = new LinkedList<>();
         queue.offer(startRow * cols + startCol);
 
+        LinkedList<int[]> path = new LinkedList<>();
+        path.add(new int[]{startRow, startCol});
+
         while (!queue.isEmpty()) {
             int current = queue.poll();
             int row = current / cols;
             int col = current % cols;
 
             if (row == endRow && col == endCol) {
+                showPath(path, gui);
                 return true;
             }
 
@@ -209,14 +226,19 @@ public class GUI extends JPanel {
                         && maze[newRow][newCol] != 1 && !visited[newRow][newCol]) {
                     queue.offer(newRow * cols + newCol);
                     visited[newRow][newCol] = true;
+                    if ((newRow == startpoint[0] && newCol == startpoint[1]) || (newRow == endpoint[0] && newCol == endpoint[1])) {
+                        continue;
+                    }
                     maze[newRow][newCol] = SEARCHED;
                     gui.repaint();
 
                     try {
-                        Thread.sleep(150);  // Delay to visualize the search process
+                        Thread.sleep(100);  // Delay to visualize the search process
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+                    path.add(new int[]{newRow, newCol});
                 }
             }
         }
@@ -232,14 +254,45 @@ public class GUI extends JPanel {
 
         int cellSize = 40;
         GUI panel = new GUI(maze2, cellSize);
+        startpoint = new int[]{0, 0};
+        endpoint = new int[]{10, 11};
 
         JFrame frame = new JFrame("PATHFINDER");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(panel);
+        frame.setLayout(new BorderLayout());
+
+        //TODO: fix the lines below
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.add(panel, BorderLayout.WEST);
+
+
+//        panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+//        panel.bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+
+
+        JButton customButton = new JButton("DFS");
+        customButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+            }
+        });
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(customButton);
+
+        contentPanel.add(buttonPanel, BorderLayout.EAST);
+
+
+
+        frame.add(contentPanel);
+
+        //TODO: fix the lines above
+
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        panel.dfs(maze2, 0, 0, 10, 11, panel);
-
     }
+    
 }
