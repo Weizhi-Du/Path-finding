@@ -272,18 +272,26 @@ public class GUI extends JPanel {
 //        panel.bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
 
 
-        JButton customButton = new JButton("DFS");
-        customButton.addActionListener(new ActionListener() {
+        JButton dfsButton = new JButton("DFS");
+        dfsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
             }
         });
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(customButton);
+        buttonPanel.add(dfsButton);
+
+        JButton bfsButton = new JButton("BFS");
+        bfsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel.bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+            }
+        });
+        buttonPanel.add(bfsButton);
 
         contentPanel.add(buttonPanel, BorderLayout.EAST);
-
 
 
         frame.add(contentPanel);
