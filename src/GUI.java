@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 
@@ -82,46 +84,47 @@ public class GUI extends JPanel {
         }
     }
 
-//    public void changeCellColor(int[][] maze, int row, int col, Color color, GUI gui) {
-//        try {
-//            Thread.sleep(500);  // Delay to visualize the color change
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        maze[row][col] = getColorCode(color);
-//        gui.repaint();
-//        try {
-//            Thread.sleep(500);  // Delay to visualize the color change
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+/*
+    public void changeCellColor(int[][] maze, int row, int col, Color color, GUI gui) {
+        try {
+            Thread.sleep(500);  // Delay to visualize the color change
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        maze[row][col] = getColorCode(color);
+        gui.repaint();
+        try {
+            Thread.sleep(500);  // Delay to visualize the color change
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-//    private int getColorCode(Color color) {
-//        if (color.equals(Color.WHITE)) {
-//            return EMPTY;
-//        } else if (color.equals(Color.BLACK)) {
-//            return WALL;
-//        } else if (color.equals(Color.BLUE)) {
-//            return START;
-//        } else if (color.equals(Color.GREEN)) {
-//            return END;
-//        } else if (color.equals(Color.YELLOW)) {
-//            return VISITED;
-//        } else if (color.equals(Color.ORANGE)) {
-//            return SEARCHED;
-//        } else {
-//            return -1;  // Unknown color
-//        }
-//    }
+    }
+    private int getColorCode(Color color) {
+        if (color.equals(Color.WHITE)) {
+            return EMPTY;
+        } else if (color.equals(Color.BLACK)) {
+            return WALL;
+        } else if (color.equals(Color.BLUE)) {
+            return START;
+        } else if (color.equals(Color.GREEN)) {
+            return END;
+        } else if (color.equals(Color.YELLOW)) {
+            return VISITED;
+        } else if (color.equals(Color.ORANGE)) {
+            return SEARCHED;
+        } else {
+            return -1;  // Unknown color
+        }
+    }
+*/
 
     private void showPath(LinkedList<int[]> path, GUI gui) {
         for (int[] cell : path) {
             if ((cell[0] == startpoint[0] && cell[1] == startpoint[1]) || (cell[0] == endpoint[0] && cell[1] == endpoint[1])) {
                 continue;
             }
-            System.out.print("(" + cell[0] + ", " + cell[1] + ") ");  // Print the path
+//            System.out.print("(" + cell[0] + ", " + cell[1] + ") ");  // Print the path
             try {
                 Thread.sleep(30);
             } catch (InterruptedException e) {
@@ -256,12 +259,40 @@ public class GUI extends JPanel {
 
         JFrame frame = new JFrame("PATHFINDER");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(panel);
+        frame.setLayout(new BorderLayout());
+
+        //TODO: fix the lines below
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.add(panel, BorderLayout.WEST);
+
+
+//        panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+//        panel.bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+
+
+        JButton customButton = new JButton("DFS");
+        customButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+            }
+        });
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(customButton);
+
+        contentPanel.add(buttonPanel, BorderLayout.EAST);
+
+
+
+        frame.add(contentPanel);
+
+        //TODO: fix the lines above
+
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
-        panel.bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
-
     }
+    
 }
