@@ -3,10 +3,14 @@ import java.awt.*;
 import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 
 public class GUI extends JPanel {
+    private boolean isSearching = false;
     private final int[][] maze;
     private final int cellSize;
     private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.GREEN, Color.RED, Color.ORANGE, Color.PINK};
@@ -247,6 +251,37 @@ public class GUI extends JPanel {
     }
 
 
+    public void dfsThread() {
+        isSearching = true;
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], GUI.this);
+                isSearching = false;
+            }
+
+        }, 0, TimeUnit.MILLISECONDS);
+
+        executor.shutdown();
+    }
+
+    public void bfsThread() {
+        isSearching = true;
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], GUI.this);
+                isSearching = false;
+            }
+
+        }, 0, TimeUnit.MILLISECONDS);
+
+        executor.shutdown();
+    }
 
 
     public static void main(String[] args) {
@@ -261,22 +296,20 @@ public class GUI extends JPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        //TODO: fix the lines below
 
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BorderLayout());
         contentPanel.add(panel, BorderLayout.WEST);
 
 
-//        panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
-//        panel.bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
-
 
         JButton dfsButton = new JButton("DFS");
         dfsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+                if (!panel.isSearching) {
+                    panel.dfsThread();
+                }
             }
         });
         JPanel buttonPanel = new JPanel();
@@ -286,7 +319,7 @@ public class GUI extends JPanel {
         bfsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], panel);
+                panel.bfsThread();
             }
         });
         buttonPanel.add(bfsButton);
@@ -296,11 +329,11 @@ public class GUI extends JPanel {
 
         frame.add(contentPanel);
 
-        //TODO: fix the lines above
 
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
     }
     
 }
