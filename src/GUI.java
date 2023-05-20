@@ -301,6 +301,9 @@ public class GUI extends JPanel {
         contentPanel.setLayout(new BorderLayout());
         contentPanel.add(panel, BorderLayout.WEST);
 
+        JTextField startXField = new JTextField(5);
+        JTextField startYField = new JTextField(5);
+
 
 
         JButton dfsButton = new JButton("DFS");
@@ -308,6 +311,10 @@ public class GUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!panel.isSearching) {
+                    panel.startpoint[0] = Integer.parseInt(startXField.getText());
+                    panel.startpoint[1] = Integer.parseInt(startYField.getText());
+                    maze[startpoint[0]][startpoint[1]] = START;
+                    panel.repaint();
                     panel.dfsThread();
                 }
             }
@@ -318,7 +325,13 @@ public class GUI extends JPanel {
         bfsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.bfsThread();
+                if (!panel.isSearching) {
+                    panel.startpoint[0] = Integer.parseInt(startXField.getText());
+                    panel.startpoint[1] = Integer.parseInt(startYField.getText());
+                    maze[startpoint[0]][startpoint[1]] = START;
+                    panel.repaint();
+                    panel.bfsThread();
+                }
             }
         });
 
@@ -343,7 +356,15 @@ public class GUI extends JPanel {
         buttonPanel.add(bfsButton);
         buttonPanel.add(clearButton);
 
+        JPanel inputXPanel = new JPanel();
+        inputXPanel.add(new JLabel("Start X:"));
+        inputXPanel.add(startXField);
+        JPanel inputYPanel = new JPanel();
+        inputYPanel.add(new JLabel("Start Y:"));
+        inputYPanel.add(startYField);
 
+        buttonPanel.add(inputXPanel);
+        buttonPanel.add(inputYPanel);
         contentPanel.add(buttonPanel, BorderLayout.EAST);
 
 
