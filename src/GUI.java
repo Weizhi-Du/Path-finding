@@ -35,7 +35,7 @@ public class GUI extends JPanel {
             {1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
     private static int[][] maze2 = {
-            {2, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
+            {0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
             {0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1},
             {1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1},
             {1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1},
@@ -45,7 +45,7 @@ public class GUI extends JPanel {
             {0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0},
             {1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 3},
+            {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
             {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
     };
 
@@ -301,9 +301,11 @@ public class GUI extends JPanel {
         contentPanel.setLayout(new BorderLayout());
         contentPanel.add(panel, BorderLayout.WEST);
 
-        JTextField startXField = new JTextField(5);
-        JTextField startYField = new JTextField(5);
+        JTextField startXField = new JTextField("0", 5);
+        JTextField startYField = new JTextField("0", 5);
 
+        JTextField endXField = new JTextField("10", 5);
+        JTextField endYField = new JTextField("11", 5);
 
 
         JButton dfsButton = new JButton("DFS");
@@ -311,10 +313,6 @@ public class GUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!panel.isSearching) {
-                    panel.startpoint[0] = Integer.parseInt(startXField.getText());
-                    panel.startpoint[1] = Integer.parseInt(startYField.getText());
-                    maze[startpoint[0]][startpoint[1]] = START;
-                    panel.repaint();
                     panel.dfsThread();
                 }
             }
@@ -326,10 +324,6 @@ public class GUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!panel.isSearching) {
-                    panel.startpoint[0] = Integer.parseInt(startXField.getText());
-                    panel.startpoint[1] = Integer.parseInt(startYField.getText());
-                    maze[startpoint[0]][startpoint[1]] = START;
-                    panel.repaint();
                     panel.bfsThread();
                 }
             }
@@ -357,14 +351,54 @@ public class GUI extends JPanel {
         buttonPanel.add(clearButton);
 
         JPanel inputXPanel = new JPanel();
-        inputXPanel.add(new JLabel("Start X:"));
+        inputXPanel.add(new JLabel("Start Row:"));
         inputXPanel.add(startXField);
+
         JPanel inputYPanel = new JPanel();
-        inputYPanel.add(new JLabel("Start Y:"));
+        inputYPanel.add(new JLabel("Start Col:"));
         inputYPanel.add(startYField);
+
+        JPanel inputEXPanel = new JPanel();
+        inputEXPanel.add(new JLabel("End Row:"));
+        inputEXPanel.add(endXField);
+
+        JPanel inputEYPanel = new JPanel();
+        inputEYPanel.add(new JLabel("End Col:"));
+        inputEYPanel.add(endYField);
+
+        JButton setSEButton = new JButton("Set SE");
+        setSEButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < maze.length; i++) {
+                    for (int j = 0; j < maze[0].length; j++) {
+                        if (maze[i][j] == START || maze[i][j] == END) {
+                            maze[i][j] = EMPTY;
+                        }
+                    }
+                }
+
+                panel.startpoint[0] = Integer.parseInt(startXField.getText());
+                panel.startpoint[1] = Integer.parseInt(startYField.getText());
+                maze[startpoint[0]][startpoint[1]] = START;
+
+                panel.endpoint[0] = Integer.parseInt(endXField.getText());
+                panel.endpoint[1] = Integer.parseInt(endYField.getText());
+                maze[endpoint[0]][endpoint[1]] = END;
+
+                panel.repaint();
+            }
+        });
+
+        JPanel setButtonPanel = new JPanel();
+        setButtonPanel.add(setSEButton);
 
         buttonPanel.add(inputXPanel);
         buttonPanel.add(inputYPanel);
+        buttonPanel.add(inputEXPanel);
+        buttonPanel.add(inputEYPanel);
+        buttonPanel.add(setSEButton);
+
         contentPanel.add(buttonPanel, BorderLayout.EAST);
 
 
