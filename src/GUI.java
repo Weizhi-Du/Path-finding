@@ -11,15 +11,15 @@ import java.util.concurrent.TimeUnit;
 
 public class GUI extends JPanel {
     private boolean isSearching = false;
-    private final int[][] maze;
+    private static int[][] maze;
     private final int cellSize;
-    private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.GREEN, Color.RED, Color.ORANGE, Color.PINK};
-    private final int EMPTY = 0;
-    private final int WALL = 1;
-    private final int START = 2;
-    private final int END = 3;
-    private final int PATH = 4;
-    private final int SEARCHED = 5;
+    private static final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.GREEN, Color.RED, Color.ORANGE, Color.PINK};
+    private static final int EMPTY = 0;
+    private static final int WALL = 1;
+    private static final int START = 2;
+    private static final int END = 3;
+    private static final int PATH = 4;
+    private static final int SEARCHED = 5;
     private static int[] startpoint;
     private static int[] endpoint;
 
@@ -312,8 +312,7 @@ public class GUI extends JPanel {
                 }
             }
         });
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(dfsButton);
+
 
         JButton bfsButton = new JButton("BFS");
         bfsButton.addActionListener(new ActionListener() {
@@ -322,7 +321,28 @@ public class GUI extends JPanel {
                 panel.bfsThread();
             }
         });
+
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < maze.length; i++) {
+                    for (int j = 0; j < maze[0].length; j++) {
+                        if (maze[i][j] == SEARCHED || maze[i][j] == PATH) {
+                            maze[i][j] = EMPTY;
+                        }
+                    }
+                }
+                panel.repaint();
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.add(dfsButton);
         buttonPanel.add(bfsButton);
+        buttonPanel.add(clearButton);
+
 
         contentPanel.add(buttonPanel, BorderLayout.EAST);
 
