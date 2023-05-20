@@ -11,15 +11,15 @@ import java.util.concurrent.TimeUnit;
 
 public class GUI extends JPanel {
     private boolean isSearching = false;
-    private final int[][] maze;
+    private static int[][] maze;
     private final int cellSize;
-    private final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.GREEN, Color.RED, Color.ORANGE, Color.PINK};
-    private final int EMPTY = 0;
-    private final int WALL = 1;
-    private final int START = 2;
-    private final int END = 3;
-    private final int PATH = 4;
-    private final int SEARCHED = 5;
+    private static final Color[] COLORS = {Color.WHITE, Color.BLACK, Color.GREEN, Color.RED, Color.ORANGE, Color.PINK};
+    private static final int EMPTY = 0;
+    private static final int WALL = 1;
+    private static final int START = 2;
+    private static final int END = 3;
+    private static final int PATH = 4;
+    private static final int SEARCHED = 5;
     private static int[] startpoint;
     private static int[] endpoint;
 
@@ -301,6 +301,9 @@ public class GUI extends JPanel {
         contentPanel.setLayout(new BorderLayout());
         contentPanel.add(panel, BorderLayout.WEST);
 
+        JTextField startXField = new JTextField(5);
+        JTextField startYField = new JTextField(5);
+
 
 
         JButton dfsButton = new JButton("DFS");
@@ -308,22 +311,60 @@ public class GUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!panel.isSearching) {
+                    panel.startpoint[0] = Integer.parseInt(startXField.getText());
+                    panel.startpoint[1] = Integer.parseInt(startYField.getText());
+                    maze[startpoint[0]][startpoint[1]] = START;
+                    panel.repaint();
                     panel.dfsThread();
                 }
             }
         });
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(dfsButton);
+
 
         JButton bfsButton = new JButton("BFS");
         bfsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.bfsThread();
+                if (!panel.isSearching) {
+                    panel.startpoint[0] = Integer.parseInt(startXField.getText());
+                    panel.startpoint[1] = Integer.parseInt(startYField.getText());
+                    maze[startpoint[0]][startpoint[1]] = START;
+                    panel.repaint();
+                    panel.bfsThread();
+                }
             }
         });
-        buttonPanel.add(bfsButton);
 
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < maze.length; i++) {
+                    for (int j = 0; j < maze[0].length; j++) {
+                        if (maze[i][j] == SEARCHED || maze[i][j] == PATH) {
+                            maze[i][j] = EMPTY;
+                        }
+                    }
+                }
+                panel.repaint();
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.add(dfsButton);
+        buttonPanel.add(bfsButton);
+        buttonPanel.add(clearButton);
+
+        JPanel inputXPanel = new JPanel();
+        inputXPanel.add(new JLabel("Start X:"));
+        inputXPanel.add(startXField);
+        JPanel inputYPanel = new JPanel();
+        inputYPanel.add(new JLabel("Start Y:"));
+        inputYPanel.add(startYField);
+
+        buttonPanel.add(inputXPanel);
+        buttonPanel.add(inputYPanel);
         contentPanel.add(buttonPanel, BorderLayout.EAST);
 
 
