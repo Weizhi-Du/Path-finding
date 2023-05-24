@@ -24,6 +24,16 @@ public class GUI extends JPanel {
     private static int[] endpoint;
 
     private static int[][] maze1 = {
+            {0, 0, 0, 1, 1, 0, 0, 0},
+            {0, 0, 1, 0, 0, 1, 0, 0},
+            {0, 1, 0, 0, 0, 0, 1, 0},
+            {1, 0, 0, 1, 1, 0, 0, 1},
+            {1, 0, 0, 1, 1, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 1, 0},
+            {0, 0, 1, 0, 0, 1, 0, 0},
+            {0, 0, 0, 1, 1, 0, 0, 0}
+    };
+    private static int[][] maze2 = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 0, 1, 0, 0, 0, 1},
             {1, 0, 1, 0, 1, 0, 1, 0, 1},
@@ -34,7 +44,7 @@ public class GUI extends JPanel {
             {1, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
-    private static int[][] maze2 = {
+    private static int[][] maze3 = {
             {0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1},
             {0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1},
             {1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1},
@@ -46,8 +56,43 @@ public class GUI extends JPanel {
             {1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
             {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0}
     };
+    private static int[][] maze4 = {
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1},
+            {1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1},
+            {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+            {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+            {1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1},
+            {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+            {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+            {1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+    };
+    private static int[][] maze5 = {
+            {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+            {0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0},
+            {1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0},
+            {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0},
+            {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0},
+            {0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1},
+            {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
+            {0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0},
+            {0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0},
+            {0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0},
+            {1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0},
+            {0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0},
+            {0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0}
+    };
+
+
+
+
 
     public GUI(int[][] maze, int cellSize) {
         this.maze = maze;
@@ -258,7 +303,7 @@ public class GUI extends JPanel {
         executor.schedule(new Runnable() {
             @Override
             public void run() {
-                dfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], GUI.this);
+                dfs(maze, startpoint[0], startpoint[1], endpoint[0], endpoint[1], GUI.this);
                 isSearching = false;
             }
 
@@ -274,7 +319,7 @@ public class GUI extends JPanel {
         executor.schedule(new Runnable() {
             @Override
             public void run() {
-                bfs(maze2, startpoint[0], startpoint[1], endpoint[0], endpoint[1], GUI.this);
+                bfs(maze, startpoint[0], startpoint[1], endpoint[0], endpoint[1], GUI.this);
                 isSearching = false;
             }
 
@@ -284,11 +329,19 @@ public class GUI extends JPanel {
     }
 
 
+
+
+
+
     public static void main(String[] args) {
 
 
         int cellSize = 40;
-        GUI panel = new GUI(maze2, cellSize);
+        GUI panel = new GUI(maze5, cellSize);
+
+//        int[][] randomMaze = generateMaze(20, 20);
+//        GUI panel = new GUI(randomMaze, cellSize);
+
         startpoint = new int[]{0, 0};
         endpoint = new int[]{10, 11};
 
@@ -343,6 +396,17 @@ public class GUI extends JPanel {
                 panel.repaint();
             }
         });
+
+//        JButton maze1Button = new JButton("Maze 1");
+//        maze1Button.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                GUI panel = new GUI(maze1, cellSize);
+//                contentPanel = new JPanel();
+//                contentPanel.setLayout(new BorderLayout());
+//                contentPanel.add(panel, BorderLayout.WEST);
+//            }
+//        });
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
